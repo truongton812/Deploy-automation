@@ -1,0 +1,224 @@
+# Default environment for deployment
+default_env: stage
+
+# GitHub API configuration
+github_api: https://api.github.com/repos
+repo_owner: xxxx
+repo_name: xxxx
+github_token: xxxx
+
+# GCP project IDs for each environment
+gcp_projects:
+  stage: xxxx
+  prod: xxxx
+
+# Number of versions to keep per service
+keep_versions: 10
+
+# Custom directory configurations
+directories: /home/tony_pham2/deploy-token-studio
+# Environment-specific configurations
+environments:
+  stage:
+    dispatch:
+      maintenance:
+        dispatch:
+          - url: "*.stage.tokenstudio.gu.net/*"
+            service: maintenance
+          - url: "stage.tokenstudio.gu.net/*"
+            service: maintenance
+      services:
+        dispatch:
+          - url: api.stage.tokenstudio.gu.net/*
+            service: default
+          - url: admin.stage.tokenstudio.gu.net/*
+            service: admin-app
+          - url: app.stage.tokenstudio.gu.net/*
+            service: web-app
+          - url: stage.tokenstudio.gu.net/*
+            service: client-web-app
+    services:
+      maintenance:
+        app_yaml:
+          runtime: nodejs20
+          service: maintenance
+          handlers:
+            - url: /.*
+              secure: always
+              redirect_http_response_code: 301
+              static_files: maintenance.html
+              upload: maintenance.html
+      admin-app:
+        package_name: admin-app
+        app_yaml:
+          runtime: nodejs20
+          env: standard
+          service: admin-app
+          handlers:
+            - url: /.*
+              secure: always
+              redirect_http_response_code: 301
+              script: auto
+          env_variables:
+            CLOUD_SERVICE_PROVIDER: "gcloud"
+          build_env_variables:
+            GOOGLE_NODE_RUN_SCRIPTS: ''
+      client-web-app:
+        package_name: client-web-app
+        app_yaml:
+          runtime: nodejs20
+          env: standard
+          service: client-web-app
+          handlers:
+            - url: /.*
+              secure: always
+              redirect_http_response_code: 301
+              script: auto
+          env_variables:
+            CLOUD_SERVICE_PROVIDER: "gcloud"
+          build_env_variables:
+            GOOGLE_NODE_RUN_SCRIPTS: ''
+      web-app:
+        package_name: web-app
+        app_yaml:
+          runtime: nodejs20
+          env: standard
+          service: web-app
+          handlers:
+            - url: /.*
+              secure: always
+              redirect_http_response_code: 301
+              script: auto
+          env_variables:
+            CLOUD_SERVICE_PROVIDER: "gcloud"
+          build_env_variables:
+            GOOGLE_NODE_RUN_SCRIPTS: ''
+      default:
+        package_name: api-server
+        app_yaml:
+          runtime: nodejs20
+          env: standard
+          service: default
+          entrypoint: npm run start
+          handlers:
+            - url: /.*
+              secure: always
+              redirect_http_response_code: 301
+              script: auto
+            - url: .*
+              script: auto
+          env_variables:
+            CLOUD_SERVICE_PROVIDER: "gcloud"
+          build_env_variables:
+            GOOGLE_NODE_RUN_SCRIPTS: ''
+          network:
+            session_affinity: true
+  prod:
+    dispatch:
+      maintenance:
+        dispatch:
+          - url: "*.tokenstudio.gu.net/*"
+            service: maintenance
+          - url: "tokenstudio.gu.net/*"
+            service: maintenance
+      services:
+        dispatch:
+          - url: api.tokenstudio.gu.net/*
+            service: default
+          - url: admin.tokenstudio.gu.net/*
+            service: admin-app
+          - url: app.tokenstudio.gu.net/*
+            service: web-app
+          - url: tokenstudio.gu.net/*
+            service: client-web-app
+    services:
+      maintenance:
+        app_yaml:
+          runtime: nodejs20
+          service: maintenance
+          handlers:
+            - url: /.*
+              secure: always
+              redirect_http_response_code: 301
+              static_files: maintenance.html
+              upload: maintenance.html
+      admin-app:
+        package_name: admin-app
+        app_yaml:
+          runtime: nodejs20
+          env: standard
+          service: admin-app
+          handlers:
+            - url: /.*
+              script: auto
+              secure: always
+              redirect_http_response_code: '301'
+            - url: .*
+              script: auto
+          env_variables:
+            CLOUD_SERVICE_PROVIDER: "gcloud"
+          build_env_variables:
+            GOOGLE_NODE_RUN_SCRIPTS: ''
+      client-web-app:
+        package_name: client-web-app
+        app_yaml:
+          runtime: nodejs20
+          env: standard
+          service: client-web-app
+          automatic_scaling:
+            min_instances: 1
+          handlers:
+            - url: /.*
+              script: auto
+              secure: always
+              redirect_http_response_code: '301'
+            - url: .*
+              script: auto
+          env_variables:
+            CLOUD_SERVICE_PROVIDER: "gcloud"
+          build_env_variables:
+            GOOGLE_NODE_RUN_SCRIPTS: ''
+      web-app:
+        package_name: web-app
+        app_yaml:
+          runtime: nodejs20
+          env: standard
+          service: web-app
+          automatic_scaling:
+            min_instances: 1
+          handlers:
+            - url: /.*
+              script: auto
+              secure: always
+              redirect_http_response_code: '301'
+            - url: .*
+              script: auto
+          env_variables:
+            CLOUD_SERVICE_PROVIDER: "gcloud"
+          build_env_variables:
+            GOOGLE_NODE_RUN_SCRIPTS: ''
+      default:
+        package_name: api-server
+        app_yaml:
+          runtime: nodejs20
+          env: standard
+          service: default
+          entrypoint: npm run start
+          automatic_scaling:
+            min_instances: 1
+          handlers:
+            - url: /.*
+              script: auto
+              secure: always
+              redirect_http_response_code: '301'
+            - url: .*
+              script: auto
+          env_variables:
+            CLOUD_SERVICE_PROVIDER: "gcloud"
+          build_env_variables:
+            GOOGLE_NODE_RUN_SCRIPTS: ''
+          network:
+            session_affinity: true
+          vpc_access_connector:
+            name: projects/gu-token-studio-prod/locations/asia-northeast1/connectors/mongo-connector
+            egress_setting: private-ranges-only
