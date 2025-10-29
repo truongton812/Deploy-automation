@@ -23,19 +23,19 @@ environments:
     dispatch:
       maintenance:
         dispatch:
-          - url: "*.stage.tokenstudio.gu.net/*"
+          - url: "*.xxxx/*"
             service: maintenance
-          - url: "stage.tokenstudio.gu.net/*"
+          - url: "xxxx/*"
             service: maintenance
       services:
         dispatch:
-          - url: api.stage.tokenstudio.gu.net/*
+          - url: xxxx/*
             service: default
-          - url: admin.stage.tokenstudio.gu.net/*
+          - url: xxxx/*
             service: admin-app
-          - url: app.stage.tokenstudio.gu.net/*
+          - url: xxxx/*
             service: web-app
-          - url: stage.tokenstudio.gu.net/*
+          - url: xxxx/*
             service: client-web-app
     services:
       maintenance:
@@ -117,19 +117,19 @@ environments:
     dispatch:
       maintenance:
         dispatch:
-          - url: "*.tokenstudio.gu.net/*"
+          - url: "*.xxxx/*"
             service: maintenance
-          - url: "tokenstudio.gu.net/*"
+          - url: "xxxx/*"
             service: maintenance
       services:
         dispatch:
-          - url: api.tokenstudio.gu.net/*
+          - url: xxxx/*
             service: default
-          - url: admin.tokenstudio.gu.net/*
+          - url: xxxx/*
             service: admin-app
-          - url: app.tokenstudio.gu.net/*
+          - url: xxxx/*
             service: web-app
-          - url: tokenstudio.gu.net/*
+          - url: xxxx/*
             service: client-web-app
     services:
       maintenance:
@@ -220,5 +220,5 @@ environments:
           network:
             session_affinity: true
           vpc_access_connector:
-            name: projects/gu-token-studio-prod/locations/asia-northeast1/connectors/mongo-connector
+            name: xxxx
             egress_setting: private-ranges-only
